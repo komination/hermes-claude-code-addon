@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hermes-claude-code-addon"
+version = "0.1.0"
+description = "Out-of-tree claude_code runtime for Hermes Agent: delegate turns to the real Claude Code binary (plan-quota billing) without modifying the Hermes checkout"
+requires-python = ">=3.10"
+# Runtime deps intentionally empty. Everything Hermes-side (agent.*, tools.*,
+# hermes_cli.*, run_agent) is supplied by the host venv the addon installs
+# into; everything else the addon uses is the Python standard library. The
+# addon is NOT independently installable — it only makes sense inside the
+# Hermes venv. Test-only tooling lives in the `test` dependency-group below.
+dependencies = []
+
+[dependency-groups]
+# PEP 735 test-only tooling: NOT runtime deps and NOT part of the published
+# package, so they stay out of `dependencies`. Installed on demand by
+# `uv run --group test`. Note the Hermes source tree itself is NOT pip-declarable
+# here — it is a private editable install, not on any index — so tests reach it
+# via sys.path wiring in tests/conftest.py.
+test = ["pytest>=9.0.2,<10"]
+
+[project.scripts]
+hermes-claude-code-addon = "hermes_claude_code.tool:main"
+
+[tool.setuptools]
+packages = ["hermes_claude_code"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
